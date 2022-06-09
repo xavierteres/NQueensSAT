@@ -210,11 +210,6 @@ llistesDiagonalsAVars([P|Ps],N,[S1|S2]):- coordenadesAVars(P,N,S1),llistesDiagon
 minimNReines([],[]).
 minimNReines([V|Vs],FN):- comaminimUn(V,S1), minimNReines(Vs,S2), append(S1,S2,FN).
 
-
-prova(A):-append([1,2],[],A).
-prova(A):-append([1,3],[],A).
-prova(A):-append([1,4],[],A).
-
 %%%%%%%%%
 % resol()
 % Ens demana els parametres del tauler i l'estat inicial,
