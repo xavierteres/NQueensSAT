@@ -227,7 +227,7 @@ entrada(N,I,P):-
     write('Posicions per fixar'), nl, read(I),
     write('Posicions per prohibir'), nl, read(P).
 
-resol(N,I,P):-
+resol:-
     entrada(N,I,P),
     fesTauler(N,I,P,V,Ini),
     minimNReines(V,FN),
@@ -264,3 +264,4 @@ treuNegatius([V|Vs],[V|S]):- V > 0, treuNegatius(Vs, S),!.
 % Fixeu-vos que li passarem els literals positius del model de la nostra
 % formula.
 % ...
+
