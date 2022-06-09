@@ -4,9 +4,9 @@
 % Assumim invariant que no hi ha literals repetits a les clausules ni la clausula buida inicialment.
 sat([],I,I):- write('SAT'),nl,!.
 sat(CNF,I,M):-
-    % Ha de triar un literal d’una clausula unitaria, si no n’hi ha cap, llavors un literal pendent qualsevol.
+    % ha de triar un literal d’una clausula unitaria, si no n’hi ha cap, llavors un literal pendent qualsevol.
     decideix(CNF,Lit),
-    % Simplifica la CNF amb el Lit triat (compte pq pot fallar, es a dir si troba la clausula buida fallara i fara backtraking).
+    % simplifica la CNF amb el Lit triat (compte pq pot fallar, es a dir si troba la clausula buida fallara i fara backtraking).
     simplif(Lit,CNF,CNFS),
     % crida recursiva amb la CNF i la interpretacio actualitzada
     append([Lit],I,R),
@@ -18,9 +18,9 @@ sat(CNF,I,M):-
 % -> el segon parametre sera un literal de CNF
 %  - si hi ha una clausula unitaria sera aquest literal, sino
 %  - un qualsevol o el seu negat.
-decideix(F,Lit):- member([Lit],F), !. % si hi ha una clausula unitaria sera aquest literal (tallem les demés branques)
-decideix([[Lit|_]|_],Lit). % el primer literal de la primera clàusula ("un qualsevol")
-decideix([[Lit|_]|_],Negat) :- Negat is -Lit. % el negat del primer literal de la primera clàusula
+decideix(F,Lit):- member([Lit],F), !. % si hi ha una clausula unitaria sera aquest literal (tallem les demes branques)
+decideix([[Lit|_]|_],Lit). % el primer literal de la primera clausula ("un qualsevol")
+decideix([[Lit|_]|_],Negat) :- Negat is -Lit. % el negat del primer literal de la primera clausula
 
 %%%%%%%%%%%%%%%%%%%%%
 % simlipf(Lit, F, FS)
@@ -39,6 +39,12 @@ simplif(Lit,[X|Xs],FS):-
     append([R],R1,FS), !.
 simplif(Lit,[X|Xs],FS):- simplif(Lit, Xs, R), append([X],R,FS), !.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%
@@ -61,10 +67,16 @@ nega([],[]).
 nega([X|Xs],N):- nega(Xs,R), XN is -X, append([XN],R,N), !.
 
 % AUX
+% parelles(X,P)
+% Donat una llista de variables booleanes,
+% -> el segon parametre sera la llista de totes les parelles possibles
 parelles([],[]).
 parelles([H|T],P) :- parelles(H,T,P).
 
-%AUX
+% AUX
+% parelles(X,Y,P)
+% Donat un element i una llista de variables booleanes,
+% -> el segon parametre sera la llista de totes les parelles possibles
 parelles(A,[],[]) :- !.
 parelles(A,[B],[[A,B]]) :- !.
 parelles(A,[B|T],P) :-
@@ -73,6 +85,9 @@ parelles(A,[B|T],P) :-
     append(P2,P3,P).
 
 % AUX
+% combina(X,Y,P)
+% Donat un element X i una llista de variables booleanes Y,
+% -> el segon parametre sera la llista de ptotes les parelles possibles de X amb els elements de Y
 combina(A,[B],[[A,B]]) :- !.
 combina(A,[B|T],C) :- combina(A,T,C2), append([[A,B]],C2,C).
 
@@ -138,17 +153,25 @@ noAmenacesFiles([X|Xs], F):- comamoltUn(X,S1), noAmenacesFiles(Xs,S2), append(S1
 % donada la matriu de variables,
 % -> C sera la CNF que codifiqui que no s'amenecen les reines de les mateixes columnes
 noAmenacesColumnes([],[]).
-noAmenacesColumnes(X, C):- transpose(X,Y), noAmenacesFiles(Y,C).
+noAmenacesColumnes(X, C):- transposa(X,Y), noAmenacesFiles(Y,C).
 
 % AUX
-transpose([], []).
-transpose([F|Fs], Ts):- transpose(F, [F|Fs], Ts).
+% transposa(F,T)
+% donada una llista de llistes que representen una matriu
+% -> T és aquesta matriu transposada
+transposa([], []).
+transposa([F|Fs], T):- transposa(F, [F|Fs], Ts).
 
 % AUX
-transpose([], _, []).
-transpose([_|Rs], Ms, [Ts|Tss]):- lists_firsts_rests(Ms, Ts, Ms1), transpose(Rs, Ms1, Tss).
+% transposa(F,M,T)
+% immersio recursivitat transposa/2
+% -> T és aquesta matriu transposada
+transposa([], _, []).
+transposa([_|Rs], Ms, [Ts|Tss]) :- lists_firsts_rests(Ms, Ts, Ms1), transposa(Rs, Ms1, Tss).
 
 % AUX
+% lists_firsts_rests(F,M,T)
+% auxiliar per transposa/3
 lists_firsts_rests([], [], []).
 lists_firsts_rests([[F|Os]|Rest],[F|Fs],[Os|Oss]):- lists_firsts_rests(Rest, Fs, Oss).
 
