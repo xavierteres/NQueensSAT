@@ -87,7 +87,7 @@ parelles(A,[B|T],P) :-
 % AUX
 % combina(X,Y,P)
 % Donat un element X i una llista de variables booleanes Y,
-% -> el segon parametre sera la llista de ptotes les parelles possibles de X amb els elements de Y
+% -> el segon parametre sera la llista de totes les parelles possibles de X amb els elements de Y
 combina(A,[B],[[A,B]]) :- !.
 combina(A,[B|T],C) :- combina(A,T,C2), append([[A,B]],C2,C).
 
@@ -158,14 +158,14 @@ noAmenacesColumnes(X, C):- transposa(X,Y), noAmenacesFiles(Y,C).
 % AUX
 % transposa(F,T)
 % donada una llista de llistes que representen una matriu
-% -> T és aquesta matriu transposada
+% -> T es aquesta matriu transposada
 transposa([], []).
 transposa([F|Fs], Ts):- transposa(F, [F|Fs], Ts).
 
 % AUX
 % transposa(F,M,T)
-% immersio recursivitat transposa/2
-% -> T és aquesta matriu transposada
+% immersio recursivitat de transposa/2
+% -> T es aquesta matriu transposada
 transposa([], _, []).
 transposa([_|Rs], Ms, [Ts|Tss]) :- lists_firsts_rests(Ms, Ts, Ms1), transposa(Rs, Ms1, Tss).
 
@@ -256,7 +256,9 @@ resol:-
     mostraTauler(N,MP).
 
 % AUX
+% entrada(N,I,P)
 % Demana a l'usuari l'entrada del programa
+% -> N sera la mida del tauler, I les posicions fixades i P les prohibides
 entrada(N,I,P):-
     write('Mida del tauler'), nl, read(N),
     write('Posicions per fixar'), nl, read(I),
@@ -290,7 +292,7 @@ mostraTauler(N,M):- E is N*2+1, mostraLinia(E), nl, mostraTauler(1,1,N,M).
 
 % AUX
 % donada la fila F, la columna C, la mida del tauler N, i la llista de les posicions on hi ha reina M
-% -> mostra tot el tauler indicant on hi ha una reina
+% -> mostra la resta de tauler de mida N a partir de (F, C)
 mostraTauler(N,C,N,M):- C < N, mostraElement(N,C,N,M), X is C+1, mostraTauler(N,X,N,M), !.
 mostraTauler(N,C,N,M):- C >= N, mostraElement(N,C,N,M), write('|'), nl, E is N*2+1, mostraLinia(E), nl, !.
 mostraTauler(F,C,N,M):- C < N, mostraElement(F,C,N,M), X is C+1, mostraTauler(F,X,N,M), !.
@@ -299,12 +301,13 @@ mostraTauler(F,C,N,M):- C >= N, mostraElement(F,C,N,M), write('|'), nl, E is N*2
 % AUX
 % mostraElement(F,C,N,M)
 % donada la fila F, la columna C, la mida del tauler N, i la llista de les posicions on hi ha reina M
-% -> mostra si hi ha o no una reina a la posicio (F,C)
+% -> mostra la casella (F,C) indicant si hi ha o no una reina
 mostraElement(F,C,N,M):- X is (F-1)*N+C, member(X,M), write('|Q'), !.
 mostraElement(F,C,N,M):- write('| '), !.
 
 % AUX
 % mostraLinia(N)
-% mostra una ralla de longitud N
+% donada una longitud N
+% -> mostra una ralla de longitud N
 mostraLinia(0).
 mostraLinia(N):- N>0, write('-'), X is N-1, mostraLinia(X).
