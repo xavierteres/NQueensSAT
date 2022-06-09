@@ -64,6 +64,7 @@ nega([X|Xs],N):- nega(Xs,R), XN is -X, append([XN],R,N), !.
 parelles([],[]).
 parelles([H|T],P) :- parelles(H,T,P).
 
+%AUX
 parelles(A,[],[]) :- !.
 parelles(A,[B],[[A,B]]) :- !.
 parelles(A,[B|T],P) :-
@@ -87,7 +88,6 @@ exactamentUn(L,CNF):- comaminimUn(L, S1), comamoltUn(L,S2), append(S1,S2,CNF).
 % unes prohibides PP
 % -> V sera la llista de llistes variables necessaries per codificar el tauler
 % -> I sera la CNF codificant posicions inicials i prohibides
-
 fesTauler(N,PI,PP,V,I):- X is N*N, llista(1,X,Y), trosseja(Y,N,V), fixa(PI,N,S1), prohibeix(PP,N,S2), append(S1,S2,I).
 
 % AUX
@@ -216,12 +216,6 @@ minimNReines([V|Vs],FN):- comaminimUn(V,S1), minimNReines(Vs,S2), append(S1,S2,F
 % codifica les restriccions del problema i en fa una formula
 % que la enviem a resoldre amb el SAT solver
 % i si te solucio en mostrem el tauler
-
-entrada(N,I,P):-
-    write('Mida del tauler'), nl, read(N),
-    write('Posicions per fixar'), nl, read(I),
-    write('Posicions per prohibir'), nl, read(P).
-
 resol:-
     entrada(N,I,P),
     fesTauler(N,I,P,V,Ini),
@@ -238,6 +232,13 @@ resol:-
     sort(MP,MPS),
     write(MPS).
 
+% AUX
+entrada(N,I,P):-
+    write('Mida del tauler'), nl, read(N),
+    write('Posicions per fixar'), nl, read(I),
+    write('Posicions per prohibir'), nl, read(P).
+
+% AUX
 treuNegatius([],[]).
 treuNegatius([V|Vs],S):- V < 0, treuNegatius(Vs,S),!.
 treuNegatius([V|Vs],[V|S]):- V > 0, treuNegatius(Vs, S),!.
@@ -259,4 +260,3 @@ treuNegatius([V|Vs],[V|S]):- V > 0, treuNegatius(Vs, S),!.
 % Fixeu-vos que li passarem els literals positius del model de la nostra
 % formula.
 % ...
-
