@@ -241,8 +241,7 @@ minimNReines([V|Vs],FN):- comaminimUn(V,S1), minimNReines(Vs,S2), append(S1,S2,F
 % i si te solucio en mostrem el tauler
 resol:-
     entrada(N,I,P),
-    N is 4,
-    fesTauler(N,[],[],V,Ini),
+    fesTauler(N,I,P,V,Ini),
     minimNReines(V,FN),
     noAmenacesFiles(V,CNFfiles),
     noAmenacesColumnes(V,CNFcolumnes),
