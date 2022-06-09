@@ -29,13 +29,13 @@ decideix([[Lit|_]|_],Negat) :- Negat is -Lit. % el negat del primer literal de l
 %  - sense les clausules que tenen lit
 %  - treient -Lit de les clausules on hi es, si apareix la clausula buida fallara.
 simplif(_,[],[]).
-simplif(Lit,[X|Xs],FS):- append(_,[Lit|_],X), !, simplif(Lit, Xs, FS), !.
+simplif(Lit,[X|Xs],FS):- append(_,[Lit|_],X), !, simplif(Lit,Xs,FS), !.
 simplif(Lit,[X|Xs],FS):-
     Negat is -Lit,
     append(A,[Negat|B],X), !,
     append(A,B,R),
     R \= [],
-    simplif(Lit, Xs, R1),
+    simplif(Lit,Xs,R1),
     append([R],R1,FS), !.
 simplif(Lit,[X|Xs],FS):- simplif(Lit, Xs, R), append([X],R,FS), !.
 
@@ -160,7 +160,7 @@ noAmenacesColumnes(X, C):- transposa(X,Y), noAmenacesFiles(Y,C).
 % donada una llista de llistes que representen una matriu
 % -> T és aquesta matriu transposada
 transposa([], []).
-transposa([F|Fs], T):- transposa(F, [F|Fs], Ts).
+transposa([F|Fs], Ts):- transposa(F, [F|Fs], Ts).
 
 % AUX
 % transposa(F,M,T)
@@ -191,7 +191,7 @@ diagonals(N,L):- diagonalsIn(1,N,L1), diagonals2In(1,N,L2), append(L1,L2,L).
 % ?- diagonalsIn(1,3,L).
 % L = [[(1,1)],[(1,2),(2,1)],[(1,3),(2,2),(3,1)],[(2,3),(3,2)],[(3,3)]]
 % Evidentment les diagonals amb una sola coordenada les ignorarem...
-diagonalsIn(D,N,[]):-D is 2*N,!.
+diagonalsIn(D,N,[]):- D is 2*N,!.
 diagonalsIn(D,N,[L1|L]):- D=<N,fesDiagonal(1,D,L1), D1 is D+1, diagonalsIn(D1,N,L).
 diagonalsIn(D,N,[L1|L]):- D>N, F is D-N+1,fesDiagonalReves(F,N,N,L1), D1 is D+1, diagonalsIn(D1,N,L).
 
@@ -200,7 +200,7 @@ fesDiagonal(F,C,[(F,C)|R]):- F1 is F+1, C1 is C-1, fesDiagonal(F1,C1,R).
 
 % quan la fila es N parem
 fesDiagonalReves(N,C,N,[(N,C)]):-!.
-fesDiagonalReves(F,C,N,[(F,C)|R]):-F1 is F+1, C1 is C-1, fesDiagonalReves(F1,C1,N,R).
+fesDiagonalReves(F,C,N,[(F,C)|R]):- F1 is F+1, C1 is C-1, fesDiagonalReves(F1,C1,N,R).
 
 % diagonals2In(D,N,L)
 % Generem les diagonals baix-dreta a dalt-esquerra
@@ -208,13 +208,13 @@ fesDiagonalReves(F,C,N,[(F,C)|R]):-F1 is F+1, C1 is C-1, fesDiagonalReves(F1,C1,
 % ?- diagonals2In(1,3,L).
 % L = [[(3,1)],[(3,2),(2,1)],[(3,3),(2,2),(1,1)],[(2,3),(1,2)],[(1,3)]]
 diagonals2In(D,N,[]):-D is 2*N,!.
-diagonals2In(D,N,[L1|L]):- D<N,fesDiagonal2(N,D,L1), D1 is D+1, diagonals2In(D1,N,L). % començem pel final
-diagonals2In(D,N,L):- D>=N, F is D-N+1,fesDiagonalReves2(F,N,L1), D1 is D+1, diagonals2In(D1,N,L2), append(L2, [L1], L). % treiem paràmetre
+diagonals2In(D,N,[L1|L]):- D<N, fesDiagonal2(N,D,L1), D1 is D+1, diagonals2In(D1,N,L). % començem per abaix a l'esquerra
+diagonals2In(D,N,L):- D>=N, F is D-N+1, fesDiagonalReves2(F,N,L1), D1 is D+1, diagonals2In(D1,N,L2), append(L2, [L1], L).
 
 fesDiagonal2(F,1,[(F,1)]):- !.
 fesDiagonal2(F,C,[(F,C)|R]):- F1 is F-1, C1 is C-1, fesDiagonal2(F1,C1,R). % decrementem fila i columna
 
-% quan la fila es 1 parem, no necesitem paràmetre N
+% quan la fila es 1 parem, no necesitem parametre N
 fesDiagonalReves2(1,C,[(1,C)]):- !.
 fesDiagonalReves2(F,C,[(F,C)|R]):- F1 is F-1, C1 is C-1, fesDiagonalReves2(F1,C1,R). % decrementem fila i columna
 
@@ -252,8 +252,8 @@ resol:-
     append(CNF3, CNFdiagonals,CNF),
     sat(CNF,[],M),
     treuNegatius(M,MP),
-    sort(MP,MPS),
-    write(MPS).
+    write(MP), nl,
+    mostraTauler(N,MP).
 
 % AUX
 entrada(N,I,P):-
@@ -282,4 +282,25 @@ treuNegatius([V|Vs],[V|S]):- V > 0, treuNegatius(Vs, S),!.
 % -------
 % Fixeu-vos que li passarem els literals positius del model de la nostra
 % formula.
-% ...
+mostraTauler(N,M):- E is N*2+1, mostraLinia(E), nl, mostraTauler(1,1,N,M).
+
+% AUX
+% donada la fila F, la columna C, la mida del tauler N, i la llista de les posicions on hi ha reina M
+% -> mostra tot el tauler indicant on hi ha una reina
+mostraTauler(N,C,N,M):- C < N, mostraElement(N,C,N,M), X is C+1, mostraTauler(N,X,N,M), !.
+mostraTauler(N,C,N,M):- C >= N, mostraElement(N,C,N,M), write('|'), nl, E is N*2+1, mostraLinia(E), nl, !.
+mostraTauler(F,C,N,M):- C < N, mostraElement(F,C,N,M), X is C+1, mostraTauler(F,X,N,M), !.
+mostraTauler(F,C,N,M):- C >= N, mostraElement(F,C,N,M), write('|'), nl, E is N*2+1, mostraLinia(E), nl, X is F+1, mostraTauler(X,1,N,M), !.
+
+% AUX
+% mostraElement(F,C,N,M)
+% donada la fila F, la columna C, la mida del tauler N, i la llista de les posicions on hi ha reina M
+% -> mostra si hi ha o no una reina a la posicio (F,C)
+mostraElement(F,C,N,M):- X is (F-1)*N+C, member(X,M), write('|Q'), !.
+mostraElement(F,C,N,M):- write('| '), !.
+
+% AUX
+% mostraLinia(N)
+% mostra una ralla de longitud N
+mostraLinia(0).
+mostraLinia(N):- N>0, write('-'), X is N-1, mostraLinia(X).
