@@ -241,7 +241,8 @@ minimNReines([V|Vs],FN):- comaminimUn(V,S1), minimNReines(Vs,S2), append(S1,S2,F
 % i si te solucio en mostrem el tauler
 resol:-
     entrada(N,I,P),
-    fesTauler(N,I,P,V,Ini),
+    N is 4,
+    fesTauler(N,[],[],V,Ini),
     minimNReines(V,FN),
     noAmenacesFiles(V,CNFfiles),
     noAmenacesColumnes(V,CNFcolumnes),
@@ -252,16 +253,19 @@ resol:-
     append(CNF3, CNFdiagonals,CNF),
     sat(CNF,[],M),
     treuNegatius(M,MP),
-    write(MP), nl,
     mostraTauler(N,MP).
 
 % AUX
+% Demana a l'usuari l'entrada del programa
 entrada(N,I,P):-
     write('Mida del tauler'), nl, read(N),
     write('Posicions per fixar'), nl, read(I),
-    write('Posicions per prohibir'), nl, read(P).
+    write('Posicions per prohibir'), nl, read(P), get_code(_), !.
 
 % AUX
+% treuNegatius(L,S)
+% donada una llista L
+% -> S sera una llista amb els elements positius de L
 treuNegatius([],[]).
 treuNegatius([V|Vs],S):- V < 0, treuNegatius(Vs,S),!.
 treuNegatius([V|Vs],[V|S]):- V > 0, treuNegatius(Vs, S),!.
