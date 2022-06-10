@@ -4,7 +4,7 @@
 % Assumim invariant que no hi ha literals repetits a les clausules ni la clausula buida inicialment.
 sat([],I,I):- write('SAT'),nl,!.
 sat(CNF,I,M):-
-    % ha de triar un literal d’una clausula unitaria, si no n’hi ha cap, llavors un literal pendent qualsevol.
+    % ha de triar un literal d'una clausula unitaria, si no n'hi ha cap, llavors un literal pendent qualsevol.
     decideix(CNF,Lit),
     % simplifica la CNF amb el Lit triat (compte pq pot fallar, es a dir si troba la clausula buida fallara i fara backtraking).
     simplif(Lit,CNF,CNFS),
@@ -156,24 +156,18 @@ noAmenacesColumnes([],[]).
 noAmenacesColumnes(X, C):- transposa(X,Y), noAmenacesFiles(Y,C).
 
 % AUX
-% transposa(F,T)
+% transposa(M,T)
 % donada una llista de llistes que representen una matriu
 % -> T es aquesta matriu transposada
-transposa([], []).
-transposa([F|Fs], Ts):- transposa(F, [F|Fs], Ts).
+transposa([[]|_], []).
+transposa(M, [R|Rs]) :- transposaPrimeraColumna(M, R, RM), transposa(RM, Rs).
 
 % AUX
-% transposa(F,M,T)
-% immersio recursivitat de transposa/2
-% -> T es aquesta matriu transposada
-transposa([], _, []).
-transposa([_|Rs], Ms, [Ts|Tss]) :- lists_firsts_rests(Ms, Ts, Ms1), transposa(Rs, Ms1, Tss).
-
-% AUX
-% lists_firsts_rests(F,M,T)
-% auxiliar per transposa/3
-lists_firsts_rests([], [], []).
-lists_firsts_rests([[F|Os]|Rest],[F|Fs],[Os|Oss]):- lists_firsts_rests(Rest, Fs, Oss).
+% transposaPrimeraColumna(R,H,T)
+% donada la matriu
+% -> H sera la primera fila de la matriu transposada i T la resta de la matriu que ens falta per tractar
+transposaPrimeraColumna([], [], []).
+transposaPrimeraColumna([[H|T]|R],[H|Hs],[T|Ts]):- transposaPrimeraColumna(R, Hs, Ts).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % noAmenacesDiagonals(+N,C)
@@ -181,7 +175,7 @@ lists_firsts_rests([[F|Os]|Rest],[F|Fs],[Os|Oss]):- lists_firsts_rests(Rest, Fs,
 % -> D sera la CNF que codifiqui que no s'amenecen les reines de les mateixes diagonals
 noAmenacesDiagonals(N,D):- diagonals(N,L), llistesDiagonalsAVars(L,N,V), noAmenacesFiles(V,D).
 
-% Genera les llistes de diagonals d'una matriu NxN. Cada diagonal es una llista de coordenades.
+% Genera les llistes de diagonals d'una matriu NxN. Cada diagonal es una llista de coordenades
 diagonals(N,L):- diagonalsIn(1,N,L1), diagonals2In(1,N,L2), append(L1,L2,L).
 
 % diagonalsIn(D,N,L)
@@ -218,7 +212,7 @@ fesDiagonal2(F,C,[(F,C)|R]):- F1 is F-1, C1 is C-1, fesDiagonal2(F1,C1,R). % dec
 fesDiagonalReves2(1,C,[(1,C)]):- !.
 fesDiagonalReves2(F,C,[(F,C)|R]):- F1 is F-1, C1 is C-1, fesDiagonalReves2(F1,C1,R). % decrementem fila i columna
 
-% Passa una llista de coordenades  de tauler NxN a variables corresponents.
+% Passa una llista de coordenades  de tauler NxN a variables corresponents
 coordenadesAVars([],_,[]).
 coordenadesAVars([(F,C)|R],N,[V|RV]):- V is (F-1)*N+C, coordenadesAVars(R,N,RV).
 
@@ -234,7 +228,7 @@ minimNReines([],[]).
 minimNReines([V|Vs],FN):- comaminimUn(V,S1), minimNReines(Vs,S2), append(S1,S2,FN).
 
 %%%%%%%%%
-% resol()
+% resol
 % Ens demana els parametres del tauler i l'estat inicial,
 % codifica les restriccions del problema i en fa una formula
 % que la enviem a resoldre amb el SAT solver
@@ -249,7 +243,7 @@ resol:-
     append(Ini,FN,CNF1),
     append(CNF1, CNFfiles,CNF2),
     append(CNF2, CNFcolumnes,CNF3),
-    append(CNF3, CNFdiagonals,CNF),
+    append(CNF3, CNFdiagonals,CNF), !,
     sat(CNF,[],M),
     treuNegatius(M,MP),
     mostraTauler(N,MP).
@@ -259,9 +253,9 @@ resol:-
 % Demana a l'usuari l'entrada del programa
 % -> N sera la mida del tauler, I les posicions fixades i P les prohibides
 entrada(N,I,P):-
-    write('Mida del tauler'), nl, read(N),
-    write('Posicions per fixar'), nl, read(I),
-    write('Posicions per prohibir'), nl, read(P), get_code(_), !.
+    write('Mida del tauler:'), nl, read(N),
+    write('Posicions per fixar:'), nl, read(I),
+    write('Posicions per prohibir:'), nl, read(P), get_code(_), !.
 
 % AUX
 % treuNegatius(L,S)
@@ -292,7 +286,6 @@ mostraTauler(N,M):- E is N*2+1, mostraLinia(E), nl, mostraTauler(1,1,N,M).
 % AUX
 % donada la fila F, la columna C, la mida del tauler N, i la llista de les posicions on hi ha reina M
 % -> mostra la resta de tauler de mida N a partir de (F, C)
-mostraTauler(N,C,N,M):- C < N, mostraElement(N,C,N,M), X is C+1, mostraTauler(N,X,N,M), !.
 mostraTauler(N,C,N,M):- C >= N, mostraElement(N,C,N,M), write('|'), nl, E is N*2+1, mostraLinia(E), nl, !.
 mostraTauler(F,C,N,M):- C < N, mostraElement(F,C,N,M), X is C+1, mostraTauler(F,X,N,M), !.
 mostraTauler(F,C,N,M):- C >= N, mostraElement(F,C,N,M), write('|'), nl, E is N*2+1, mostraLinia(E), nl, X is F+1, mostraTauler(X,1,N,M), !.
