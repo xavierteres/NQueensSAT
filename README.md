@@ -1,6 +1,2 @@
-# Reines
-## TODO
-- Revisar que no es vegi massa igual
-- Posar descripció a tot
-- Fer el mostrar tauler
-- Fer informe
+# NQueensSAT
+Resolem el problema de col·locar N reines en un tauler de NxN amb Prolog. Per fer-ho implementem un predicat per decidir la satisfactibilitat de fórmules Booleanes en CNF mitjançant el procediment de decisió DPLL. Un cop el tinguem, codificarem la resolubilitat del problema de les N reines en fórmules Booleanes i farem servir el nostre predicat de satisfactibilitat Booleana per trobar-ne la solució (quan en tingui).
